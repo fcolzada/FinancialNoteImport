@@ -18,16 +18,41 @@ namespace FinancialNoteImport
 
         static void Main(string[] args)
         {
+            try
+            { 
+            List<String> arguments = new List<string>(args);
             //obsolete_importFromtxt();
             //importwithOFU();
+            checkArgs(arguments);
             DataContext dc = DataContext.CreateInstance();
-            dc.importByCSV("C:\\Temp\\ListaMovimenti.CSV");
+
+                if (arguments.Contains("IC")) //caricamento Nexi RAW
+                    dc.importByXLSX("C:\\Temp\\movimenti.xlsx");
+
+                if (arguments.Contains("IB"))
+                dc.importByCSV("C:\\Temp\\ListaMovimenti.CSV");
+
+                
+
+                if (arguments.Contains("C"))
+                dc.consolidate();
+
+            if (arguments.Contains("F"))
+                dc.fillWallets();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occured: " + ex.ToString());
+            }
         }
 
-        
-        
+        private static void checkArgs(List<String> arguments)
+        {
 
-   
+            if (arguments.Count < 1)
+                throw new ArgumentException("No argument supplied");
+        }
+
         static void importwithOFU()
         {
             LegacyExcelManager excelManager = new LegacyExcelManager();
